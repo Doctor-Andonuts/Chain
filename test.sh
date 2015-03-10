@@ -40,8 +40,35 @@ printHeader "Delete 3"
 # Add
 reset
 printHeader "Add 3"
-./chain.py add name min:5 max:6
+./chain.py add Test 5 6
 ./chain.py
 
 
+# Mod
+reset
+printHeader "Mod 1"
+./chain.py 1 mod "Changed 1" 5 6
+./chain.py
+
+reset
+printHeader "Mod 2"
+./chain.py 2 mod MORE 2 2
+./chain.py
+
+
+# Done
+reset
+printHeader "Done 1"
+./chain.py 1 done
+./chain.py
+
+reset
+printHeader "Done 1"
+./chain.py 1 done 2015-03-08
+./chain.py
+
+reset
+printHeader "Done 2"
+./chain.py 2 done
+./chain.py
 

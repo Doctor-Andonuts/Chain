@@ -5,25 +5,24 @@ import json
 from datetime import datetime
 import sys
 
-# TODO: Breaks if no dates
 # Display some info from the JSON
 def printChains():
 	for chain in Chains:
-		lastCompleted = datetime.strptime(chain['dates'][0], '%Y-%m-%d')
-#		print "Chain Date: " + chain['dates'][0]
-#		print "Chain Date: " + lastCompleted.strftime('%Y-%m-%d')
-#		print "Today Date: " + datetime.now().strftime('%Y-%m-%d')
+		if len(chain['dates']) > 0:
+			lastCompleted = datetime.strptime(chain['dates'][0], '%Y-%m-%d')
 
-		daysSinceLastCompleted = (datetime.now() - lastCompleted).days
-
-		if daysSinceLastCompleted > chain['maxDays']:
-			message = "Do - Broken Chain"
-		elif daysSinceLastCompleted == chain['maxDays']:
-			message = "Do - Last Day"
-		elif daysSinceLastCompleted >= chain['minDays']:
-			message = "Should"
-		elif daysSinceLastCompleted < chain['minDays']:
-			message = "Wait"
+			daysSinceLastCompleted = (datetime.now() - lastCompleted).days
+	
+			if daysSinceLastCompleted > chain['maxDays']:
+				message = "Do - Broken Chain"
+			elif daysSinceLastCompleted == chain['maxDays']:
+				message = "Do - Last Day"
+			elif daysSinceLastCompleted >= chain['minDays']:
+				message = "Should"
+			elif daysSinceLastCompleted < chain['minDays']:
+				message = "Wait"
+		else:
+			message = "Do - First Complete not done"
 
 		print '%s (%i-%i): %s' % (chain['name'],chain['minDays'],chain['maxDays'], message)
 
@@ -33,6 +32,25 @@ def deleteChain(filterId):
 			Chains.remove(chain) 
 
 
+def addChain(newChainName, newChainMinDays, newChainMaxDays):
+	newDates = []
+	newChain = {'name':newChainName,'minDays':int(newChainMinDays),'maxDays':int(newChainMaxDays),'dates':newDates}
+	Chains.append(newChain)
+
+def modChain(chainId, chainName, chainMinDays, chainMaxDays):
+        for chain in Chains:
+                if int(chainId) == int(chain['id']):
+			chain['name'] = chainName
+			chain['minDays'] = int(chainMinDays)
+			chain['maxDays'] = int(chainMaxDays)
+			
+
+def markChainDone(filterId, doneDate):
+	 for chain in Chains:
+                if int(filterId) == int(chain['id']):
+			chain['dates'].append(doneDate)
+			chain['dates'].sort(reverse=True)
+			
 
 #---------------------------
 
@@ -56,27 +74,20 @@ if len(sys.argv) == 1:
 	printChains()
 else:
 	if sys.argv[1] == 'add':
-		print 'TODO: add'
-
-
-		newDates = ['2015-03-09']
-		newChain = {'name':'Test Name','minDays':5,'maxDays':6,'dates':newDates}
-		Chains.append(newChain)
-
-
-
+		addChain(sys.argv[2], sys.argv[3], sys.argv[4])
 	elif sys.argv[2] == 'delete':
 		deleteChain(sys.argv[1])
 	elif sys.argv[2] == 'mod':
-		print 'TODO: mod'
+		modChain(sys.argv[1], sys.argv[3], sys.argv[4], sys.argv[5])
 	elif sys.argv[2] == 'done':
-		print 'TODO: done';
+		if len(sys.argv) <= 3:
+			today = datetime.now()
+			doneDate = today.strftime("%Y-%m-%d")
+		else:
+			doneDate = sys.argv[3]
+		markChainDone(sys.argv[1], doneDate)
 	else:
 		print 'Syntax Error'
-
-
-
-
 
 
 # Write my new JSON to file
