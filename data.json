@@ -1,0 +1,1 @@
+[{"maxDays": 3, "dates": ["2015-03-06", "2015-02-21", "2015-02-20"], "minDays": 2, "name": "Exercise", "id": 1}, {"maxDays": 1, "dates": ["2015-03-06", "2015-02-21", "2015-02-20"], "minDays": 1, "name": "Handstand", "id": 2}, {"maxDays": 6, "dates": ["2015-03-09"], "minDays": 5, "name": "Test Name"}]
