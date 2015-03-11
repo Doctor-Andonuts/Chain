@@ -80,7 +80,18 @@ def printChains():
 		chainDays = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
 
 
-		print chainName + " " + chainDays.center(daysLength)
+		today = datetime.now()
+		dateData = ""
+		for i in range(0,14):
+			dateDiff = timedelta(days=i)
+			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
+			if dateTest in chain['dates']:
+				dateData += "  X"
+			else:
+				dateData += "  ."
+
+
+		print chainName + " " + chainDays.center(daysLength) + dateData
 
 
 
