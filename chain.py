@@ -55,7 +55,7 @@ def printChains():
 	
 	today = datetime.now()
 	dateHeader = ""
-	for i in range(0,14):
+	for i in range(0,7):
 		dateDiff = timedelta(days=i)
 		dateHeader += color.UNDERLINE + (today - dateDiff).strftime('%d') + color.END + " "
 	print header + dateHeader
@@ -82,7 +82,7 @@ def printChains():
 
 		today = datetime.now()
 		dateData = ""
-		for i in range(0,14):
+		for i in range(0,7):
 			dateDiff = timedelta(days=i)
 			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
@@ -124,9 +124,9 @@ def markChainDone(filterId, doneDate):
 #---------------------------
 
 
-
+homedir = os.path.expanduser('~')
 # Load json chain data from the datafile
-with open('data.json', 'a+') as JsonFile: # This creates a new file if one did not exist
+with open(homedir + '/.chain.json', 'a+') as JsonFile: # This creates a new file if one did not exist
 	try:
 		Chains = json.load(JsonFile)
 	except ValueError, e:
@@ -164,7 +164,7 @@ else:
 
 
 # Write my new JSON to file
-with open('data.json', 'w') as outfile:
+with open(homedir + '/.chain.json', 'w') as outfile:
 	json.dump(Chains, outfile)
 
 
