@@ -1,18 +1,70 @@
 #!/usr/bin/python
 
-#Imports
+#Imports 
+import os
 import json
 from datetime import datetime
+from datetime import timedelta
 import sys
+
+class color:
+	PURPLE = '\033[95m'
+	CYAN = '\033[96m'
+	DARKCYAN = '\033[36m'
+	BLUE = '\033[94m'
+	GREEN = '\033[92m'
+	YELLOW = '\033[93m'
+	RED = '\033[91m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+	END = '\033[0m'
+class bcolors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
 
 # Display some info from the JSON
 def printChains():
+	screenRows, screenColumns = os.popen('stty size', 'r').read().split()
+
+
+# Determine rows and columns of screen
+# Determine how long the longest chain name is
+# Figure out how many days I can fit with the rest of the screen
+	
+	longestNameLength = 4;
+	longestMinLength = 1;
+	longestMaxLength = 1;
+	for chain in Chains:
+		if len(chain['name']) > longestNameLength:
+			longestNameLength = len(chain['name'])
+		if len(str(chain['minDays'])) > longestMinLength:
+			longestMinLength = len(str(chain['minDays']))
+		if len(str(chain['maxDays'])) > longestMaxLength:
+			longestMaxLength = len(str(chain['maxDays']))
+
+	daysLength = longestMinLength + longestMaxLength + 3
+	
+	header =  color.UNDERLINE + "Name".ljust(longestNameLength) + color.END + " "
+	header += color.UNDERLINE + "Days".ljust(daysLength) + color.END + " "
+	
+	today = datetime.now()
+	dateHeader = ""
+	for i in range(0,14):
+		dateDiff = timedelta(days=i)
+		dateHeader += color.UNDERLINE + (today - dateDiff).strftime('%d') + color.END + " "
+	print header + dateHeader
+
 	for chain in Chains:
 		if len(chain['dates']) > 0:
 			lastCompleted = datetime.strptime(chain['dates'][0], '%Y-%m-%d')
-
 			daysSinceLastCompleted = (datetime.now() - lastCompleted).days
-	
+			
 			if daysSinceLastCompleted > chain['maxDays']:
 				message = "Do - Broken Chain"
 			elif daysSinceLastCompleted == chain['maxDays']:
@@ -24,7 +76,13 @@ def printChains():
 		else:
 			message = "Do - First Complete not done"
 
-		print '%s (%i-%i): %s' % (chain['name'],chain['minDays'],chain['maxDays'], message)
+		chainName =  chain['name'].ljust(longestNameLength)
+		chainDays = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
+
+
+		print chainName + " " + chainDays.center(daysLength)
+
+
 
 def deleteChain(filterId):
 	for chain in Chains:
@@ -38,16 +96,16 @@ def addChain(newChainName, newChainMinDays, newChainMaxDays):
 	Chains.append(newChain)
 
 def modChain(chainId, chainName, chainMinDays, chainMaxDays):
-        for chain in Chains:
-                if int(chainId) == int(chain['id']):
+	for chain in Chains:
+		if int(chainId) == int(chain['id']):
 			chain['name'] = chainName
 			chain['minDays'] = int(chainMinDays)
 			chain['maxDays'] = int(chainMaxDays)
 			
 
 def markChainDone(filterId, doneDate):
-	 for chain in Chains:
-                if int(filterId) == int(chain['id']):
+	for chain in Chains:
+		if int(filterId) == int(chain['id']):
 			chain['dates'].append(doneDate)
 			chain['dates'].sort(reverse=True)
 			
@@ -57,8 +115,12 @@ def markChainDone(filterId, doneDate):
 
 
 # Load json chain data from the datafile
-with open('data.json') as JsonFile:
-	Chains = json.load(JsonFile)
+with open('data.json', 'a+') as JsonFile: # This creates a new file if one did not exist
+	try:
+		Chains = json.load(JsonFile)
+	except ValueError, e:
+		Chains = []
+
 
 # Chains = list
 # Chains[0] = dict
@@ -92,7 +154,7 @@ else:
 
 # Write my new JSON to file
 with open('data.json', 'w') as outfile:
-    json.dump(Chains, outfile)
+	json.dump(Chains, outfile)
 
 
 
