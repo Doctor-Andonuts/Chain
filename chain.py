@@ -30,13 +30,6 @@ class bcolors:
 
 # Display some info from the JSON
 def printChains():
-	screenRows, screenColumns = os.popen('stty size', 'r').read().split()
-
-
-# Determine rows and columns of screen
-# Determine how long the longest chain name is
-# Figure out how many days I can fit with the rest of the screen
-	
 	longestNameLength = 4;
 	longestMinLength = 1;
 	longestMaxLength = 1;
@@ -50,7 +43,8 @@ def printChains():
 
 	daysLength = longestMinLength + longestMaxLength + 3
 	
-	header =  color.UNDERLINE + "Name".ljust(longestNameLength) + color.END + " "
+	header = color.UNDERLINE + "Id" + color.END + " "
+	header +=  color.UNDERLINE + "Name".ljust(longestNameLength) + color.END + " "
 	header += color.UNDERLINE + "Days".ljust(daysLength) + color.END + " "
 	
 	today = datetime.now()
@@ -61,24 +55,9 @@ def printChains():
 	print header + dateHeader
 
 	for chain in Chains:
-		if len(chain['dates']) > 0:
-			lastCompleted = datetime.strptime(chain['dates'][0], '%Y-%m-%d')
-			daysSinceLastCompleted = (datetime.now() - lastCompleted).days
-			
-			if daysSinceLastCompleted > chain['maxDays']:
-				message = "Do - Broken Chain"
-			elif daysSinceLastCompleted == chain['maxDays']:
-				message = "Do - Last Day"
-			elif daysSinceLastCompleted >= chain['minDays']:
-				message = "Should"
-			elif daysSinceLastCompleted < chain['minDays']:
-				message = "Wait"
-		else:
-			message = "Do - First Complete not done"
-
+		chainId = str(chain['id']).rjust(2)
 		chainName =  chain['name'].ljust(longestNameLength)
 		chainDays = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
-
 
 		today = datetime.now()
 		dateData = ""
@@ -90,8 +69,7 @@ def printChains():
 			else:
 				dateData += "  ."
 
-
-		print chainName + " " + chainDays.center(daysLength) + dateData
+		print chainId + " " + chainName + " " + chainDays.center(daysLength) + dateData
 
 
 
@@ -103,7 +81,12 @@ def deleteChain(filterId):
 
 def addChain(newChainName, newChainMinDays, newChainMaxDays):
 	newDates = []
-	newChain = {'name':newChainName,'minDays':int(newChainMinDays),'maxDays':int(newChainMaxDays),'dates':newDates}
+	newChainId = 0
+	for chain in Chains:
+		if chain['id'] > newChainId:
+			newChainId = int(chain['id'])
+		newChainId += 1
+	newChain = {'id':newChainId,'name':newChainName,'minDays':int(newChainMinDays),'maxDays':int(newChainMaxDays),'dates':newDates}
 	Chains.append(newChain)
 
 def modChain(chainId, chainName, chainMinDays, chainMaxDays):
