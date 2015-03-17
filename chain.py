@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding: utf-8
 
 #Imports 
 import os
@@ -27,6 +28,13 @@ class bcolors:
 	ENDC = '\033[0m'
 	BOLD = '\033[1m'
 	UNDERLINE = '\033[4m'
+
+CompletedCharacter = "X"
+SpacingCharacter = u"ˑ"  # Triangle
+#SpacingCharacter = u"∙" # Medium Bullet
+#SpacingCharacter = u"·" # Large Bullet
+#SpacingCharacter = u"·" # Small Bullet
+NotRequiredCharacter = "o"
 
 # Display some info from the JSON
 def printChains():
@@ -65,9 +73,9 @@ def printChains():
 			dateDiff = timedelta(days=i)
 			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
-				dateData += "  X"
+				dateData += "  " + CompletedCharacter
 			else:
-				dateData += "  ."
+				dateData += "  " + SpacingCharacter
 
 		print chainId + " " + chainName + " " + chainDays.center(daysLength) + dateData
 
