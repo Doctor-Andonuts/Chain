@@ -80,22 +80,30 @@ def printChains():
 
 	# Get Chain info
 	for chain in Chains:
-		chainData = {}
-		chainData['id'] = str(chain['id'])
-		chainData['name'] = chain['name']
-		chainData['days'] = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
-		chainData['data'] = {}
+		chainDisplay = {}
+		chainDisplay['id'] = str(chain['id'])
+		chainDisplay['name'] = chain['name']
+		chainDisplay['days'] = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
+		chainDisplay['data'] = {}
 
 		for i in xrange(daysToShow):
-			dateDiff = timedelta(days=i)
-			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
+			dateDiffDelta = timedelta(days=i)
+			dateTest = (today - dateDiffDelta).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
-				chainData['data'][i] = CompletedCharacter
+				chainDisplay['data'][i] = CompletedCharacter
 			else:
-				chainData['data'][i] = SpacingCharacter
+				# Figures out if I don't need to do the chain because less then minumum days
+				withinMin = 0
+				for j in xrange(chain['minDays']):
+					if (today - timedelta(days=i+j)).strftime('%Y-%m-%d') in chain['dates']:
+						withinMin = 1
+				if withinMin == 1:
+					chainDisplay['data'][i] = NotRequiredCharacter
+				else:
+					chainDisplay['data'][i] = SpacingCharacter
 
 		# Print Chain info
-		printLine(chainData, lengths)	
+		printLine(chainDisplay, lengths)	
 
 
 def deleteChain(filterId):
