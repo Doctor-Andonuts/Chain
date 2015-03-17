@@ -121,6 +121,7 @@ def addChain(newChainName, newChainMinDays, newChainMaxDays):
 		newChainId += 1
 	newChain = {'id':newChainId,'name':newChainName,'minDays':int(newChainMinDays),'maxDays':int(newChainMaxDays),'dates':newDates}
 	Chains.append(newChain)
+	print "Added new chain with id " + str(newChainId)
 
 def modChain(chainId, chainName, chainMinDays, chainMaxDays):
 	for chain in Chains:
