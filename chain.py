@@ -71,7 +71,7 @@ def printChains():
 
 	# Grab the date info for the header as well 
 	today = datetime.now()
-	for i in range(0,daysToShow):
+	for i in xrange(daysToShow):
 		dateDiff = timedelta(days=i)
 		headerLine['data'][i] = (today - dateDiff).strftime('%d')
 
@@ -86,7 +86,7 @@ def printChains():
 		chainData['days'] = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
 		chainData['data'] = {}
 
-		for i in range(0,daysToShow):
+		for i in xrange(daysToShow):
 			dateDiff = timedelta(days=i)
 			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
