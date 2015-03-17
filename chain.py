@@ -8,36 +8,42 @@ from datetime import datetime
 from datetime import timedelta
 import sys
 
-class color:
-	PURPLE = '\033[95m'
-	CYAN = '\033[96m'
-	DARKCYAN = '\033[36m'
-	BLUE = '\033[94m'
-	GREEN = '\033[92m'
-	YELLOW = '\033[93m'
-	RED = '\033[91m'
-	BOLD = '\033[1m'
-	UNDERLINE = '\033[4m'
-	END = '\033[0m'
-class bcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	WARNING = '\033[93m'
-	FAIL = '\033[91m'
-	ENDC = '\033[0m'
-	BOLD = '\033[1m'
-	UNDERLINE = '\033[4m'
-
+# Configuration
 CompletedCharacter = "X"
 SpacingCharacter = u"ˑ"  # Triangle
-#SpacingCharacter = u"∙" # Medium Bullet
-#SpacingCharacter = u"·" # Large Bullet
-#SpacingCharacter = u"·" # Small Bullet
-NotRequiredCharacter = "o"
+NotRequiredCharacter = "*"
+NeedToDoCharacter = "O"
+daysToShow = 10
+
+
+class color:
+	UNDERLINE = '\033[4m'
+	END = '\033[0m'
+today = datetime.now()
+
+
+def printLine(lineData, lengths, isHeader=0):
+	if isHeader:
+		formatStart = color.UNDERLINE
+		formatEnd = color.END
+	else:
+		formatStart = ""
+		formatEnd = ""
+
+	line = formatStart + lineData['id'].rjust(lengths['id']) + formatEnd + " "
+	line += formatStart + lineData['name'].ljust(lengths['name']) + formatEnd + " "
+	line += formatStart + lineData['days'].ljust(lengths['days']) + formatEnd + " "
+	for key in lineData['data']:
+		line += formatStart + lineData['data'][key].rjust(2) + formatEnd + " "
+	
+	print line
+
+	
 
 # Display some info from the JSON
 def printChains():
+	
+	# Get longest length of names, minDays, and maxDays
 	longestNameLength = 4;
 	longestMinLength = 1;
 	longestMaxLength = 1;
@@ -48,37 +54,48 @@ def printChains():
 			longestMinLength = len(str(chain['minDays']))
 		if len(str(chain['maxDays'])) > longestMaxLength:
 			longestMaxLength = len(str(chain['maxDays']))
-
 	daysLength = longestMinLength + longestMaxLength + 3
-	
-	header = color.UNDERLINE + "Id" + color.END + " "
-	header +=  color.UNDERLINE + "Name".ljust(longestNameLength) + color.END + " "
-	header += color.UNDERLINE + "Days".ljust(daysLength) + color.END + " "
-	
+
+	# Save them for passing into print functions
+	lengths = {}
+	lengths['id'] = 2
+	lengths['name'] = longestNameLength
+	lengths['days'] = longestMinLength + longestMaxLength + 3 # For (-)
+
+	# Save header data to print
+	headerLine = {}
+	headerLine['id'] = 'Id'
+	headerLine['name'] = 'Name'
+	headerLine['days'] = 'Days'
+	headerLine['data'] = {}
+
+	# Grab the date info for the header as well 
 	today = datetime.now()
-	dateHeader = ""
-	for i in range(0,7):
+	for i in range(0,daysToShow):
 		dateDiff = timedelta(days=i)
-		dateHeader += color.UNDERLINE + (today - dateDiff).strftime('%d') + color.END + " "
-	print header + dateHeader
+		headerLine['data'][i] = (today - dateDiff).strftime('%d')
 
+	# Print Header
+	printLine(headerLine, lengths, 1) 
+
+	# Get Chain info
 	for chain in Chains:
-		chainId = str(chain['id']).rjust(2)
-		chainName =  chain['name'].ljust(longestNameLength)
-		chainDays = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
+		chainData = {}
+		chainData['id'] = str(chain['id'])
+		chainData['name'] = chain['name']
+		chainData['days'] = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
+		chainData['data'] = {}
 
-		today = datetime.now()
-		dateData = ""
-		for i in range(0,7):
+		for i in range(0,daysToShow):
 			dateDiff = timedelta(days=i)
 			dateTest = (today - dateDiff).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
-				dateData += "  " + CompletedCharacter
+				chainData['data'][i] = CompletedCharacter
 			else:
-				dateData += "  " + SpacingCharacter
+				chainData['data'][i] = SpacingCharacter
 
-		print chainId + " " + chainName + " " + chainDays.center(daysLength) + dateData
-
+		# Print Chain info
+		printLine(chainData, lengths)	
 
 
 def deleteChain(filterId):
@@ -145,7 +162,6 @@ else:
 		modChain(sys.argv[1], sys.argv[3], sys.argv[4], sys.argv[5])
 	elif sys.argv[2] == 'done':
 		if len(sys.argv) <= 3:
-			today = datetime.now()
 			doneDate = today.strftime("%Y-%m-%d")
 		else:
 			doneDate = sys.argv[3]
