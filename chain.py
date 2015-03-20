@@ -8,18 +8,25 @@ from datetime import datetime
 from datetime import timedelta
 import sys
 
-# Configuration
-CompletedCharacter = "X"
-SpacingCharacter = u"ˑ"  # Triangle
-NotRequiredCharacter = "*"
-NeedToDoCharacter = "O"
-daysToShow = 10
-
 
 class color:
 	UNDERLINE = '\033[4m'
 	END = '\033[0m'
+	DARK_GREEN = '\033[48;5;22m'
+	LIGHT_GREEN = '\033[48;5;2m'
+	RED = '\033[48;5;88m'
+	YELLOW = '\033[48;5;226m'
+
 today = datetime.now()
+
+
+# Configuration
+CompletedCharacter = color.LIGHT_GREEN + "  " + color.END
+NotRequiredCharacter = color.DARK_GREEN + "  " + color.END
+ShouldDoCharacter = color.YELLOW + "  " + color.END
+NeedToDoCharacter = color.RED + "  " + color.END
+SpacingCharacter = " "
+daysToShow = 7
 
 
 def printLine(lineData, lengths, isHeader=0):
@@ -97,10 +104,21 @@ def printChains():
 				for j in xrange(chain['minDays']):
 					if (today - timedelta(days=i+j)).strftime('%Y-%m-%d') in chain['dates']:
 						withinMin = 1
+				
+				withinMax = 0
+				for k in xrange(chain['maxDays']):
+					if (today - timedelta(days=i+k)).strftime('%Y-%m-%d') in chain['dates']:
+						withinMax = 1
+
 				if withinMin == 1:
 					chainDisplay['data'][i] = NotRequiredCharacter
+				elif withinMax == 1:
+					chainDisplay['data'][i] = ShouldDoCharacter
 				else:
-					chainDisplay['data'][i] = SpacingCharacter
+					if(i == 0):			
+						chainDisplay['data'][i] = NeedToDoCharacter
+					else:
+						chainDisplay['data'][i] = SpacingCharacter
 
 		# Print Chain info
 		printLine(chainDisplay, lengths)	
