@@ -40,12 +40,21 @@ def printLine(lineData, lengths, isHeader=0):
 	line = formatStart + lineData['id'].rjust(lengths['id']) + formatEnd + " "
 	line += formatStart + lineData['name'].ljust(lengths['name']) + formatEnd + " "
 	line += formatStart + lineData['days'].ljust(lengths['days']) + formatEnd + " "
+	line += formatStart + lineData['length'].rjust(3) + formatEnd + " "
 	for key in lineData['data']:
 		line += formatStart + lineData['data'][key].rjust(2) + formatEnd + " "
 	
 	print line
 
-	
+
+def testChainLength(checkDate, chain, chainComboStart):
+	for i in xrange(1, chain['maxDays']+1):
+		testDate = checkDate - timedelta(days = i)
+		if testDate.strftime('%Y-%m-%d') in chain['dates']:
+			chainComboStart = testChainLength(testDate, chain, testDate)
+			break
+	return chainComboStart
+
 
 # Display some info from the JSON
 def printChains():
@@ -74,6 +83,7 @@ def printChains():
 	headerLine['id'] = 'Id'
 	headerLine['name'] = 'Name'
 	headerLine['days'] = 'Days'
+	headerLine['length'] = 'Len'
 	headerLine['data'] = {}
 
 	# Grab the date info for the header as well 
@@ -93,6 +103,7 @@ def printChains():
 		chainDisplay['days'] = "(" + str(chain['minDays']) + "-" + str(chain['maxDays']) + ")"
 		chainDisplay['data'] = {}
 
+		chainComboAdd = 0
 		for i in xrange(daysToShow):
 			dateDiffDelta = timedelta(days=i)
 			dateTest = (today - dateDiffDelta).strftime('%Y-%m-%d')
@@ -112,13 +123,19 @@ def printChains():
 
 				if withinMin == 1:
 					chainDisplay['data'][i] = NotRequiredCharacter
+					if i == 0: chainComboAdd = 1
 				elif withinMax == 1:
 					chainDisplay['data'][i] = ShouldDoCharacter
+					if i == 0: chainComboAdd = 1
 				else:
-					if(i == 0):			
+					if(i == 0):
 						chainDisplay['data'][i] = NeedToDoCharacter
 					else:
 						chainDisplay['data'][i] = SpacingCharacter
+
+		# Get Chain length
+		chainComboStart = testChainLength(today, chain, today)
+		chainDisplay['length'] = str((today - chainComboStart).days + chainComboAdd)
 
 		# Print Chain info
 		printLine(chainDisplay, lengths)	
