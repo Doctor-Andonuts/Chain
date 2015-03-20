@@ -109,6 +109,7 @@ def printChains():
 			dateTest = (today - dateDiffDelta).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
 				chainDisplay['data'][i] = CompletedCharacter
+				if i == 0: chainComboAdd = 1
 			else:
 				# Figures out if I don't need to do the chain because less then minumum days
 				withinMin = 0
