@@ -11,6 +11,7 @@ import sys
 
 class color:
 	UNDERLINE = '\033[4m'
+	BOLD = '\033[1m'
 	END = '\033[0m'
 	DARK_GREEN = '\033[48;5;22m'
 	LIGHT_GREEN = '\033[48;5;2m'
@@ -18,6 +19,14 @@ class color:
 	YELLOW = '\033[48;5;226m'
 
 today = datetime.now()
+
+TEST = 1
+if TEST:
+	testFileNameAdd = '.test'
+	print color.BOLD + "\nTEST DATA\n" + color.END
+else:
+	testFileNameAdd = ''
+
 
 
 # Configuration
@@ -27,7 +36,7 @@ ShouldDoCharacter = color.YELLOW + "  " + color.END
 NeedToDoCharacter = color.RED + "  " + color.END
 SpacingCharacter = " "
 daysToShow = 7
-chainDataFileName = '/.chain.json'
+chainDataFileName = '/.chain.json' + testFileNameAdd
 homedir = os.path.expanduser('~')
 
 
