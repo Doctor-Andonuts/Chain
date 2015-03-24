@@ -161,7 +161,7 @@ def deleteChain(filterId):
 
 
 def addChain(newChainName, newChainMinDays, newChainMaxDays):
-	newDates = []
+	newDates = {}
 	newChainId = 0
 	for chain in Chains:
 		if chain['id'] > newChainId:
@@ -182,8 +182,7 @@ def modChain(chainId, chainName, chainMinDays, chainMaxDays):
 def markChainDone(filterId, doneDate):
 	for chain in Chains:
 		if int(filterId) == int(chain['id']):
-			chain['dates'].append(doneDate)
-			chain['dates'].sort(reverse=True)
+			chain['dates'][doneDate] = 'X'
 			
 
 #---------------------------
