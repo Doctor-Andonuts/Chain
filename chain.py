@@ -27,6 +27,9 @@ ShouldDoCharacter = color.YELLOW + "  " + color.END
 NeedToDoCharacter = color.RED + "  " + color.END
 SpacingCharacter = " "
 daysToShow = 7
+chainDataFileName = '/.chain.json'
+homedir = os.path.expanduser('~')
+
 
 
 def printLine(lineData, lengths, isHeader=0):
@@ -177,9 +180,8 @@ def markChainDone(filterId, doneDate):
 #---------------------------
 
 
-homedir = os.path.expanduser('~')
 # Load json chain data from the datafile
-with open(homedir + '/.chain.json', 'a+') as JsonFile: # This creates a new file if one did not exist
+with open(homedir + chainDataFileName, 'a+') as JsonFile: # This creates a new file if one did not exist
 	try:
 		Chains = json.load(JsonFile)
 	except ValueError, e:
@@ -191,7 +193,8 @@ with open(homedir + '/.chain.json', 'a+') as JsonFile: # This creates a new file
 # Chains[0]['names'] = unicode
 # Chains[0]['maxDays'] = unicode
 # Chains[0]['minDays'] = unicode
-# Chains[0]['dates'] = list
+# Chains[0]['dates'] = dict
+# Chains[0]['dates']['<date>'] = <code> (code is X,S,V, or O for Compelted, Sick, Vacation, or Offday)
 
 
 
@@ -216,7 +219,7 @@ else:
 
 
 # Write my new JSON to file
-with open(homedir + '/.chain.json', 'w') as outfile:
+with open(homedir + chainDataFileName, 'w') as outfile:
 	json.dump(Chains, outfile)
 
 
