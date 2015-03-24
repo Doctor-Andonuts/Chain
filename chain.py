@@ -17,6 +17,7 @@ class color:
 	LIGHT_GREEN = '\033[48;5;2m'
 	RED = '\033[48;5;88m'
 	YELLOW = '\033[48;5;226m'
+	BLUE = '\033[48;5;20m'
 
 today = datetime.now()
 
@@ -35,6 +36,7 @@ NotRequiredCharacter = color.DARK_GREEN + "  " + color.END
 ShouldDoCharacter = color.YELLOW + "  " + color.END
 NeedToDoCharacter = color.RED + "  " + color.END
 SpacingCharacter = " "
+NotCountCharacter = color.BLUE + "  " + color.END
 daysToShow = 7
 chainDataFileName = '/.chain.json' + testFileNameAdd
 homedir = os.path.expanduser('~')
@@ -120,19 +122,24 @@ def printChains():
 			dateDiffDelta = timedelta(days=i)
 			dateTest = (today - dateDiffDelta).strftime('%Y-%m-%d')
 			if dateTest in chain['dates']:
-				chainDisplay['data'][i] = CompletedCharacter
+				if chain['dates'][dateTest] == 'X':
+					chainDisplay['data'][i] = CompletedCharacter
+				else:
+					chainDisplay['data'][i] = NotCountCharacter
 				if i == 0: chainComboAdd = 1
 			else:
 				# Figures out if I don't need to do the chain because less then minumum days
 				withinMin = 0
 				for j in xrange(chain['minDays']):
 					if (today - timedelta(days=i+j)).strftime('%Y-%m-%d') in chain['dates']:
-						withinMin = 1
+						if chain['dates'][(today - timedelta(days=i+j)).strftime('%Y-%m-%d')] == 'X':
+							withinMin = 1
 				
 				withinMax = 0
 				for k in xrange(chain['maxDays']):
 					if (today - timedelta(days=i+k)).strftime('%Y-%m-%d') in chain['dates']:
-						withinMax = 1
+						if chain['dates'][(today - timedelta(days=i+k)).strftime('%Y-%m-%d')] == 'X':
+							withinMax = 1
 
 				if withinMin == 1:
 					chainDisplay['data'][i] = NotRequiredCharacter
@@ -179,10 +186,10 @@ def modChain(chainId, chainName, chainMinDays, chainMaxDays):
 			chain['maxDays'] = int(chainMaxDays)
 			
 
-def markChainDone(filterId, doneDate):
+def markChainDone(filterId, doneDate, chainDoneType):
 	for chain in Chains:
 		if int(filterId) == int(chain['id']):
-			chain['dates'][doneDate] = 'X'
+			chain['dates'][doneDate] = chainDoneType
 			
 
 #---------------------------
@@ -216,12 +223,30 @@ else:
 		deleteChain(sys.argv[1])
 	elif sys.argv[2] == 'mod':
 		modChain(sys.argv[1], sys.argv[3], sys.argv[4], sys.argv[5])
+	elif sys.argv[2] == 'sick':
+		if len(sys.argv) <= 3:
+			doneDate = today.strftime("%Y-%m-%d")
+		else:
+			doneDate = sys.argv[3]
+		markChainDone(sys.argv[1], doneDate, 'S')
+	elif sys.argv[2] == 'vacation':
+		if len(sys.argv) <= 3:
+			doneDate = today.strftime("%Y-%m-%d")
+		else:
+			doneDate = sys.argv[3]
+		markChainDone(sys.argv[1], doneDate, 'V')
+	elif sys.argv[2] == 'offday':
+		if len(sys.argv) <= 3:
+			doneDate = today.strftime("%Y-%m-%d")
+		else:
+			doneDate = sys.argv[3]
+		markChainDone(sys.argv[1], doneDate, 'O')
 	elif sys.argv[2] == 'done':
 		if len(sys.argv) <= 3:
 			doneDate = today.strftime("%Y-%m-%d")
 		else:
 			doneDate = sys.argv[3]
-		markChainDone(sys.argv[1], doneDate)
+		markChainDone(sys.argv[1], doneDate, 'X')
 	else:
 		print 'Syntax Error'
 
