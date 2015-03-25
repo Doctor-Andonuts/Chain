@@ -62,11 +62,31 @@ def printLine(lineData, lengths, isHeader=0):
 
 
 def testChainLength(checkDate, chain, chainComboStart):
-	for i in xrange(1, chain['maxDays']+1):
+	loopRange = chain['maxDays']
+	i = 0
+#	for i in xrange(1, loopRange):
+	while i < loopRange:
+		i += 1
 		testDate = checkDate - timedelta(days = i)
-		if testDate.strftime('%Y-%m-%d') in chain['dates']:
+		testDateString = testDate.strftime('%Y-%m-%d')
+		print testDateString + " " + str(loopRange)
+
+		if testDateString in chain['dates'] and (chain['dates'][testDateString] == 'S' or chain['dates'][testDateString] == 'V' or chain['dates'][testDateString] == 'O'):
+			print chain['dates'][testDateString]
+			loopRange += 1
+		elif testDateString in chain['dates'] and chain['dates'][testDateString] == 'X':
+			print chain['dates'][testDateString]
 			chainComboStart = testChainLength(testDate, chain, testDate)
 			break
+
+
+##if testDate.strftime('%Y-%m-%d') in chain['dates']:
+#			print chain['dates'][testDateString]
+#			if chain['dates'][testDateString] == 'X':
+##		chainComboStart = testChainLength(testDate, chain, testDate)
+#			elif chain['dates'][testDateString] == 'S' or chain['dates'][testDateString] == 'S' or chain['dates'][testDateString] == 'V' or chain['dates'][testDateString] == 'O':
+#				loopRange += 1
+##		break
 	return chainComboStart
 
 
