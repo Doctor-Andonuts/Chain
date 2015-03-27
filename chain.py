@@ -79,7 +79,6 @@ def testChainLength(checkDate, chain, chainComboStart):
 
 # Display some info from the JSON
 def printChains():
-	
 	# Get longest length of names, minDays, and maxDays
 	longestNameLength = 4;
 	longestMinLength = 1;
@@ -143,10 +142,16 @@ def printChains():
 							withinMin = 1
 				
 				withinMax = 0
-				for k in xrange(chain['maxDays']):
-					if (today - timedelta(days=i+k)).strftime('%Y-%m-%d') in chain['dates']:
-						if chain['dates'][(today - timedelta(days=i+k)).strftime('%Y-%m-%d')] == 'X':
+				chainDaysToTest = chain['maxDays']
+				counter = 0
+				while counter < chainDaysToTest:
+					dateTestMax = (today - timedelta(days=i+counter)).strftime('%Y-%m-%d')
+					if dateTestMax in chain['dates']:
+						if chain['dates'][dateTestMax] == 'X':
 							withinMax = 1
+						elif chain['dates'][dateTestMax] == 'S' or chain['dates'][dateTestMax] == 'V' or chain['dates'][dateTestMax] == 'O':
+							chainDaysToTest += 1
+					counter += 1
 
 				if withinMin == 1:
 					chainDisplay['data'][i] = NotRequiredCharacter
