@@ -21,7 +21,7 @@ class color:
 
 today = datetime.now()
 
-TEST = 1
+TEST = 0
 if TEST:
 	testFileNameAdd = '.test'
 	print color.BOLD + "\nTEST DATA\n" + color.END
