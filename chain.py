@@ -21,7 +21,7 @@ class color:
 
 today = datetime.now()
 
-TEST = 0
+TEST = 1
 if TEST:
 	testFileNameAdd = '.test'
 	print color.BOLD + "\nTEST DATA\n" + color.END
@@ -38,8 +38,8 @@ NeedToDoCharacter = color.RED + "  " + color.END
 SpacingCharacter = " "
 #NotCountCharacter = color.BLUE + " X" + color.END
 SickCharacter = color.BLUE + " S" + color.END
-VacationCharacter = color.BLUE + " S" + color.END
-OffDayCharacter = color.BLUE + " S" + color.END
+VacationCharacter = color.BLUE + " V" + color.END
+OffDayCharacter = color.BLUE + " O" + color.END
 daysToShow = 7
 chainDataFileName = '/.chain.json' + testFileNameAdd
 homedir = os.path.expanduser('~')
