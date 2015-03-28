@@ -36,7 +36,10 @@ NotRequiredCharacter = color.DARK_GREEN + "  " + color.END
 ShouldDoCharacter = color.YELLOW + "  " + color.END
 NeedToDoCharacter = color.RED + "  " + color.END
 SpacingCharacter = " "
-NotCountCharacter = color.BLUE + "  " + color.END
+#NotCountCharacter = color.BLUE + " X" + color.END
+SickCharacter = color.BLUE + " S" + color.END
+VacationCharacter = color.BLUE + " S" + color.END
+OffDayCharacter = color.BLUE + " S" + color.END
 daysToShow = 7
 chainDataFileName = '/.chain.json' + testFileNameAdd
 homedir = os.path.expanduser('~')
@@ -130,8 +133,12 @@ def printChains():
 			if dateTest in chain['dates']:
 				if chain['dates'][dateTest] == 'X':
 					chainDisplay['data'][i] = CompletedCharacter
-				else:
-					chainDisplay['data'][i] = NotCountCharacter
+				elif chain['dates'][dateTest] == 'S':
+					chainDisplay['data'][i] = SickCharacter
+				elif chain['dates'][dateTest] == 'V':
+					chainDisplay['data'][i] = VacationCharacter
+				elif chain['dates'][dateTest] == 'O':
+					chainDisplay['data'][i] = OffdayCharacter	
 				if i == 0: chainComboAdd = 1
 			else:
 				# Figures out if I don't need to do the chain because less then minumum days
